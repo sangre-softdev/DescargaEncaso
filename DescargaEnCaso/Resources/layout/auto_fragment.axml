@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <Button
+        android:text="@string/auto_btn_set_alarm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/auto_btn_set_alarm" />
+    <TimePicker
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/auto_time_picker"
+        android:minWidth="25px"
+        android:minHeight="25px" />
+    <CheckBox
+        android:text="@string/auto_checkbox_only_wifi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/auto_check_only_wiFi"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="15dp" />
+</LinearLayout>

@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Download En Caso</string>
+    
+    <string name="main_nav_list">List</string>
+    <string name="main_nav_manual">Manual</string>
+    <string name="main_nav_auto">Auto</string>
+    <string name="main_write_permission_required">Write permission is required to save the file</string>
+
+  <string name="auto_btn_set_alarm">Set alarm</string>
+  <string name="auto_btn_remove_alarm">Remove alarm</string>
+  <string name="auto_checkbox_only_wifi">Download only on WiFi</string>
+  <string name="auto_toast_alarm_set">Alarm set</string>
+
+  <string name="encaso_list_no_internet">No internet connection found</string>
+
+  <string name="download_error_insufficient_space">No enough space on disk</string>
+  <string name="download_error_no_internet_conection">No internet connection found</string>
+  <string name="download_error_no_wifi_found">No WiFi connection found</string>
+  <string name="download_error_no_write_permission">No write permission found</string>
+  <string name="download_error_no_idea">An unexpecter error occurred</string>
+  <string name="download_error_retry">Try again?</string>
+  <string name="download_error_ok_button">Yes</string>
+  <string name="download_error_cancel_button">No</string>
+</resources>
