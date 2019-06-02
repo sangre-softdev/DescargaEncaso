@@ -18,12 +18,10 @@ namespace DescargaEnCaso
         private bool isOnline;
         private bool isMobile;
         private bool isWifi;
-        private bool isRoaming;
 
-        public bool IsOnline { get { return isOnline; } }
-        public bool IsMobile { get { return IsMobile; } }
-        public bool IsWifi { get { return isWifi; } }
-        public bool IsRoaming { get { return isRoaming; } }
+        public bool IsOnline => isOnline;
+        public bool IsMobile => IsMobile;
+        public bool IsWifi => isWifi;
 
         public static NetworkDetection DetectNetwork(Context context)
         {
@@ -35,15 +33,26 @@ namespace DescargaEnCaso
                 networkDetection.isOnline = info.IsConnected;
                 if (networkDetection.isOnline)
                 {
-                    networkDetection.isMobile = info.Type == ConnectivityType.Mobile;
-                    networkDetection.isWifi = info.Type == ConnectivityType.Wifi;
-                    networkDetection.isRoaming = info.IsRoaming;
+                    if (Android.OS.Build.VERSION.SdkInt >= BuildVersionCodes.M)
+                    {
+                        var network = connectivityManager.ActiveNetwork;
+                        var capabilities = connectivityManager.GetNetworkCapabilities(network);
+                        if (capabilities != null)
+                        {
+                            networkDetection.isWifi = capabilities.HasTransport(TransportType.Wifi);
+                            networkDetection.isMobile = capabilities.HasTransport(TransportType.Cellular);                            
+                        }        
+                    }
+                    else
+                    {
+                        networkDetection.isMobile = info.Type == ConnectivityType.Mobile;
+                        networkDetection.isWifi = info.Type == ConnectivityType.Wifi;                        
+                    }
                 }
                 else
                 {
                     networkDetection.isMobile = false;
                     networkDetection.isWifi = false;
-                    networkDetection.isRoaming = false;
                 }
             }
             else
@@ -51,7 +60,6 @@ namespace DescargaEnCaso
                 networkDetection.isOnline = false;
                 networkDetection.isMobile = false;
                 networkDetection.isWifi = false;
-                networkDetection.isRoaming = false;
             }
             return networkDetection;
         }

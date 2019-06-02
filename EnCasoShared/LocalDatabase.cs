@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace EnCasoShared
@@ -19,6 +20,7 @@ namespace EnCasoShared
     {
         private static LocalDatabase<RssEnCaso> rssEnCaso;
         private static LocalDatabase<EnCasoFile> enCasoFile;
+        private static LocalDatabase<RssModel> rssModel;
         static readonly object locker = new object();
 
         public static string DatabaseFilePath
@@ -51,18 +53,25 @@ namespace EnCasoShared
             }
         }
 
-        public static LocalDatabase<RssEnCaso> getRssEnCasoDb()
+        public static LocalDatabase<RssEnCaso> GetRssEnCasoDb()
         {
             if (rssEnCaso == null)
                 rssEnCaso = new LocalDatabase<RssEnCaso>(LocalDatabase<RssEnCaso>.DatabaseFilePath);
             return rssEnCaso;
         }
 
-        public static LocalDatabase<EnCasoFile> getEnCasoFileDb()
+        public static LocalDatabase<EnCasoFile> GetEnCasoFileDb()
         {
             if (enCasoFile == null)
                 enCasoFile = new LocalDatabase<EnCasoFile>(LocalDatabase<EnCasoFile>.DatabaseFilePath);
             return enCasoFile;
+        }
+
+        public static LocalDatabase<RssModel> GetRssModelDb()
+        {
+            if (rssModel == null)
+                rssModel = new LocalDatabase<RssModel>(LocalDatabase<RssModel>.DatabaseFilePath);
+            return rssModel;
         }
 
 
@@ -88,6 +97,15 @@ namespace EnCasoShared
             }
         }
 
+        public T GetFirstUsingString(string key, string searchString)
+        {
+            var property = typeof(T).GetProperty(key, BindingFlags.Public | BindingFlags.GetProperty | BindingFlags.Instance);
+            if (property == null)
+                throw new ArgumentException($"'{typeof(T).Name}' does not implement a public get property named '{key}'.");
+                        
+            return Table<T>().FirstOrDefault<T>(l => ((string)property.GetValue(l)).Contains(searchString));
+        }
+        
         public int Save(T item)
         {
             lock (locker)

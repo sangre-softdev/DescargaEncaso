@@ -1,7 +1,9 @@
-﻿using DescargaEnCaso;
+﻿using Android.Util;
+using DescargaEnCaso;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 
@@ -17,25 +19,42 @@ namespace EnCasoShared.Model
 
         public string Url { get; set; }
 
+        public string AudioBoomUrl { get; set; }
+
         public string ImageUrl { get; set; }
 
-        public static async Task<RssEnCaso[]> GetRssEnCasoAsync(bool first)
+        public static async Task<RssEnCaso[]> GetRssEnCasoAsync(bool first, CancellationToken ct)
         {
+            if (ct.IsCancellationRequested)
+            {
+                ct.ThrowIfCancellationRequested();
+            }
             List<RssEnCaso> list = new List<RssEnCaso>();
             using (XmlReader xmlReader = XmlReader.Create("http://www.canaltrans.com/podcast/rssaudio.xml", new XmlReaderSettings() { Async = true }))
             {
                 await xmlReader.MoveToContentAsync();
                 while (xmlReader.ReadToFollowing("item"))
                 {
+                    if (ct.IsCancellationRequested)                    
+                        ct.ThrowIfCancellationRequested();
                     xmlReader.ReadToFollowing("title");
                     string tit = xmlReader.ReadInnerXml();
                     xmlReader.ReadToFollowing("description");
                     string des = xmlReader.ReadInnerXml();
-                    xmlReader.ReadToFollowing("pubDate");
                     DateTime pub;
+                    xmlReader.ReadToFollowing("pubDate");                    
+                    var pubString = xmlReader.ReadInnerXml();
                     try
-                    { pub = DateTime.ParseExact(xmlReader.ReadInnerXml(), "ddd, dd MMM yyyy HH:mm:ss K", System.Globalization.CultureInfo.InvariantCulture); }
-                    catch { pub = DateTime.Now; };
+                    {
+                        pub = DateTime.ParseExact(pubString, "ddd, d MMM yyyy HH:mm:ss K", System.Globalization.CultureInfo.InvariantCulture);
+                    }
+                    catch
+                    {
+                        pub = DateTime.Now;
+                    };
+                    xmlReader.ReadToFollowing("enclosure");
+                    xmlReader.MoveToFirstAttribute();
+                    string audioboom = xmlReader.Value;
                     xmlReader.ReadToFollowing("guid");
                     string gui = xmlReader.ReadInnerXml();
                     xmlReader.ReadToFollowing("googleplay:image");
@@ -48,6 +67,7 @@ namespace EnCasoShared.Model
                         Description = des,
                         PubDate = pub,
                         Url = gui,
+                        AudioBoomUrl = audioboom,
                         ImageUrl = ima
                     });
 
@@ -66,8 +86,10 @@ namespace EnCasoShared.Model
             if (Object.ReferenceEquals(x, y)) return true;
 
             //Check whether any of the compared objects is null.
-            if (Object.ReferenceEquals(x, null) || Object.ReferenceEquals(y, null))
+            if (x is null || y is null)
+            {
                 return false;
+            }
 
             //Check whether the products' properties are equal.
             return x.Title == y.Title
@@ -77,7 +99,7 @@ namespace EnCasoShared.Model
         public int GetHashCode(RssEnCaso obj)
         {
             //Check whether the object is null
-            if (Object.ReferenceEquals(obj, null)) return 0;
+            if (obj is null) return 0;
 
             //Get hash code for the Name field if it is not null.
             int hashRssEnCasoTitle = obj.Title == null ? 0 : obj.Title.GetHashCode();

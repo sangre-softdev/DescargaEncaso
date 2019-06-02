@@ -14,11 +14,16 @@
         android:id="@+id/auto_time_picker"
         android:minWidth="25px"
         android:minHeight="25px" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+        android:id="@+id/auto_tv_how_long_to"        
+        android:layout_margin="10dp" />
     <CheckBox
         android:text="@string/auto_checkbox_only_wifi"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/auto_check_only_wiFi"
         android:layout_marginLeft="10dp"
-        android:layout_marginTop="15dp" />
+        android:layout_marginTop="5dp" />
 </LinearLayout>

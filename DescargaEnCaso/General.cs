@@ -26,8 +26,16 @@ namespace DescargaEnCaso
         public static readonly string ALARM_ACTIVE = "AlarmaActivada";
         public static readonly string ALARM_ONLY_WIFI = "UnicamenteWifi";
         public static readonly string ALARM_NOTIFICATION_EXTRA = "NotificationExtra";
+        public static readonly string ALARM_NOTIFICATION_FILE = "NotificationFile";
+
+        public static readonly string RETROCOMPATIBILIDAD = "Retrocompatibilidad";
 
         public static readonly string MANUAL_LAST_SEARCH = "LastSearch";
+
+
+        public static readonly string DOWNLOAD_START_SERVICE = "Start_Service";
+        public static readonly string DOWNLOAD_STOP_SERVICE = "Stop_Service";
+        public static readonly string DOWNLOAD_START_AUTO = "Start_Auto";
 
         public static void ProgramNextAlarm(Context context)
         {
@@ -47,18 +55,16 @@ namespace DescargaEnCaso
             //SET THE ALARM
             long triggermillis = Java.Lang.JavaSystem.CurrentTimeMillis() + (seconds * 1000);
 
-            //if (Build.VERSION.SdkInt >= BuildVersionCodes.M)
-            //    alarmManager.SetAndAllowWhileIdle(Android.App.AlarmType.RtcWakeup, triggermillis, pi);
-            //else if (Build.VERSION.SdkInt >= BuildVersionCodes.Kitkat)
-            //    alarmManager.SetExact(Android.App.AlarmType.RtcWakeup, triggermillis, pi);
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.M)
+                alarmManager.SetAndAllowWhileIdle(Android.App.AlarmType.RtcWakeup, triggermillis, pi);
+            else //if (Build.VERSION.SdkInt >= BuildVersionCodes.Kitkat)
+                alarmManager.SetExact(Android.App.AlarmType.RtcWakeup, triggermillis, pi);
             //else
-            alarmManager.Set(Android.App.AlarmType.RtcWakeup, triggermillis, pi);
+            //    alarmManager.Set(Android.App.AlarmType.RtcWakeup, triggermillis, pi);
         }
 
-        public static async Task<DownloadReturns> ExecuteDownload(Context context, RssEnCaso rssEnCaso, bool onlyWiFi)
+        public static DownloadReturns ExecuteDownload(Context context, RssEnCaso rssEnCaso, bool onlyWiFi, bool isManual)
         {
-            // first errors
-            long queueId;
             if (Android.OS.Build.VERSION.SdkInt >= BuildVersionCodes.M)
             {
                 Permission permissionCheck = context.CheckSelfPermission(Manifest.Permission.WriteExternalStorage);
@@ -76,62 +82,28 @@ namespace DescargaEnCaso
                 return DownloadReturns.NoWiFiFound;
 
             Uri uri = new Uri(rssEnCaso.Url);
-            string filename = System.IO.Path.GetFileName(uri.LocalPath);
+            //string filename = System.IO.Path.GetFileName(uri.LocalPath);
 
-            //Save to local database
-            //DataAccesObject.Save(
-            //    new EnCasoFile()
-            //    {
-            //        Title = rssEnCaso.Title,
-            //        Description = rssEnCaso.Description,
-            //        SavedFile = filename,
-            //        ImageUrl = rssEnCaso.ImageUrl,
-            //        PubDate = rssEnCaso.PubDate,
-            //        DownloadDateTime = DateTime.Now
-            //    });
-            
-
-            DownloadManager.Request request = new DownloadManager.Request(Android.Net.Uri.Parse(rssEnCaso.Url));
-            request.SetTitle(rssEnCaso.Title);
-            request.SetDescription(rssEnCaso.Description);
-            request.AllowScanningByMediaScanner();
-            request.SetMimeType("audio/mpeg");
-            request.SetVisibleInDownloadsUi(true);
-            request.SetNotificationVisibility(DownloadVisibility.VisibleNotifyCompleted);
-            request.SetDestinationInExternalPublicDir(Android.OS.Environment.DirectoryDownloads, "EnCasoPrograms/" + filename);
-
-            DownloadManager downloadManager = (DownloadManager)context.GetSystemService(Context.DownloadService);
-            queueId = downloadManager.Enqueue(request);
-
-            ICursor cursor = downloadManager.InvokeQuery(new DownloadManager.Query().SetFilterById(queueId));
-            int counterStop = 0;
-            while(cursor.MoveToFirst() && counterStop < 30)
+            Intent downloadIntent = new Intent(context, typeof(DownloadService));
+            // Flag to start service
+            if (isManual)
             {
-                Log.Debug(rssEnCaso.Title, counterStop.ToString());
-                await Task.Delay(1000);
-                
-                DownloadStatus status = (DownloadStatus)cursor.GetInt(cursor.GetColumnIndex(DownloadManager.ColumnStatus));
-
-                if (status == DownloadStatus.Failed || status == DownloadStatus.Paused)
-                {
-                    int error = cursor.GetInt(cursor.GetColumnIndex(DownloadManager.ColumnReason));
-                    if (error == (int)DownloadError.InsufficientSpace)
-                    {
-                        return DownloadReturns.InsufficientSpace;
-                    }
-                    else
-                    {
-                        return DownloadReturns.NoIdea;
-                    }
-                } else if (status == DownloadStatus.Successful)
-                {
-                    return DownloadReturns.Success;
-                }                
-                counterStop++;
-                cursor = downloadManager.InvokeQuery(new DownloadManager.Query().SetFilterById(queueId));
+                downloadIntent.SetAction(General.DOWNLOAD_START_SERVICE);
             }
-
-            return DownloadReturns.Success;
+            else
+            {
+                downloadIntent.SetAction(General.DOWNLOAD_START_AUTO);
+            }
+            // Passing values to intent
+            downloadIntent.PutExtra("file", rssEnCaso.Url);
+            downloadIntent.PutExtra("audioboomurl", rssEnCaso.AudioBoomUrl);
+            downloadIntent.PutExtra("title", rssEnCaso.Title);
+            downloadIntent.PutExtra("description", rssEnCaso.Description);
+            downloadIntent.PutExtra("imageurl", rssEnCaso.ImageUrl);
+            downloadIntent.PutExtra("pubdate", rssEnCaso.PubDate.ToString());
+            // Starting service
+            context.StartService(downloadIntent);                  
+            return DownloadReturns.ServiceStarted;
         }
 
         public static void ShowNotification(Context context, string message, int icon, PendingIntent pendingIntent)
@@ -201,8 +173,9 @@ namespace DescargaEnCaso
         NoWritePermission,
         NoInternetConection,
         NoWiFiFound,
-        InsufficientSpace,
-        NoIdea,
-        Success            
+        //InsufficientSpace,
+        //NoIdea,
+        ServiceStarted,
+        OpenFile
     }
 }

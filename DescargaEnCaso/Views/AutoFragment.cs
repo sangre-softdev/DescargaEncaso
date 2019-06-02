@@ -20,6 +20,7 @@ namespace DescargaEnCaso.Views
         private TimePicker tp;
         private CheckBox onlyWiFi;
         private Button setAlarm;
+        private TextView tvHowLong;
         ISharedPreferences prefs;
 
         public override void OnCreate(Bundle savedInstanceState)
@@ -55,8 +56,9 @@ namespace DescargaEnCaso.Views
                 tp.CurrentMinute = new Java.Lang.Integer(minute);
             }
 
+            tvHowLong = vw.FindViewById<TextView>(Resource.Id.auto_tv_how_long_to);
+            HowLongToNext();
             SetActiveAlarmText(alarmActive);
-
             return vw;
         }
 
@@ -106,6 +108,7 @@ namespace DescargaEnCaso.Views
                 editor.Apply();
                 SetActiveAlarmText(false);
             }
+            HowLongToNext();
         }
 
         private void OnlyWiFi_CheckedChange(object sender, CompoundButton.CheckedChangeEventArgs e)
@@ -113,12 +116,36 @@ namespace DescargaEnCaso.Views
             var editor = prefs.Edit();
             editor.PutBoolean(General.ALARM_ONLY_WIFI, onlyWiFi.Checked);
             editor.Apply();
+            HowLongToNext();
         }
 
         private void SetActiveAlarmText(bool isAlarmActive)
         {
             setAlarm.Text = isAlarmActive ? Resources.GetString(Resource.String.auto_btn_remove_alarm) : Resources.GetString(Resource.String.auto_btn_set_alarm);
             tp.Enabled = !isAlarmActive;
+        }
+
+        private void HowLongToNext()
+        {
+            bool alarmActive = prefs.GetBoolean(General.ALARM_ACTIVE, false);
+            int hour = prefs.GetInt(General.ALARM_HOUR, DateTime.Now.Hour);
+            int minute = prefs.GetInt(General.ALARM_MINUTE, DateTime.Now.Minute);
+            if (alarmActive)
+            {
+                int seconds = TimeCalculator.GetSecondsUntilNextCheck(new DateTime(1984, 10, 12, hour, minute, 00));
+                TimeSpan timeSpan = new TimeSpan(0, 0, seconds);
+
+                tvHowLong.Text = ((timeSpan.Days > 0 ? (timeSpan.Days.ToString() + " " + Resources.GetString(Resource.String.auto_days)) : string.Empty) + " ").TrimStart()
+                    + ((timeSpan.Hours > 0 ? (timeSpan.Hours + " " + Resources.GetString(Resource.String.auto_hours)) : string.Empty) + " ").TrimStart()
+                    + ((timeSpan.Minutes > 0 ? (timeSpan.Minutes + " " + Resources.GetString(Resource.String.auto_minutes)) : string.Empty) + " ").TrimStart()
+                    + ((timeSpan.Seconds > 0 ? (timeSpan.Seconds + " " + Resources.GetString(Resource.String.auto_seconds)) : string.Empty) + " ").TrimStart()
+                    + Resources.GetString(Resource.String.auto_until_next);
+            }
+            else
+            {
+                tvHowLong.Text = string.Empty;
+            }
+
         }
     }
 }

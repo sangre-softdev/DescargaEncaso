@@ -11,6 +11,12 @@
   <string name="auto_checkbox_only_wifi">Download only on WiFi</string>
   <string name="auto_toast_alarm_set">Alarm set</string>
 
+  <string name="auto_days">days</string>
+  <string name="auto_hours">hours</string>
+  <string name="auto_minutes">minutes</string>
+  <string name="auto_seconds">seconds</string>
+  <string name="auto_until_next">until next download</string>
+
   <string name="encaso_list_no_internet">No internet connection found</string>
 
   <string name="download_error_insufficient_space">No enough space on disk</string>
@@ -21,4 +27,14 @@
   <string name="download_error_retry">Try again?</string>
   <string name="download_error_ok_button">Yes</string>
   <string name="download_error_cancel_button">No</string>
+  
+  <string name="download_manual_file_exists">File already exists. \n Download again?</string>
+
+
+  <string name="download_service_pending_downloads">files pending to download</string>
+  <string name="download_service_downloading">Downloading...</string>
+  <string name="download_service_unauthorized_file_exception">App doesn\'t have permission to save file</string>
+  <string name="download_service_io_file_exception">An error ocurred while saving the file</string>
+  <string name="download_service_lost_internet_connection">Oops! Connection to server lost</string>
+  <string name="download_service_disk_full">Disk is full, please free up some space</string>
 </resources>
