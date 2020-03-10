@@ -140,7 +140,10 @@ namespace DescargaEnCaso.Views
 
         public void Loading(bool loading)
         {
-            swipeRefreshLayout.Refreshing = loading;
+            if (swipeRefreshLayout != null)
+            {
+                swipeRefreshLayout.Refreshing = loading;
+            }
         }
 
         public async Task DownloadImages()
