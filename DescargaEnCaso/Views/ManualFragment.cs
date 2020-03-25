@@ -22,6 +22,7 @@ using Microsoft.AppCenter.Analytics;
 
 namespace DescargaEnCaso.Views
 {
+
     public class ManualFragment : Android.Support.V4.App.Fragment
     {
         RecyclerView recyclerView;
