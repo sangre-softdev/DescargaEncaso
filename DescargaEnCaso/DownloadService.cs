@@ -256,7 +256,9 @@ namespace DescargaEnCaso
 
                 Intent openIntent = new Intent(this.ApplicationContext, typeof(MainActivity));
                 openIntent.PutExtra(General.ALARM_NOTIFICATION_EXTRA, (int)DownloadReturns.OpenFile);
-                openIntent.PutExtra(General.ALARM_NOTIFICATION_FILE, path);                
+                openIntent.PutExtra(General.ALARM_NOTIFICATION_FILE, path);
+                openIntent.PutExtra(General.ALARM_NOTIFICATION_TITLE, download.Title);
+                openIntent.PutExtra(General.ALARM_NOTIFICATION_IMAGE, download.ImageUrl);
                 PendingIntent pIntent = PendingIntent.GetActivity(this.ApplicationContext, 0, openIntent, PendingIntentFlags.UpdateCurrent);
 
                 builder

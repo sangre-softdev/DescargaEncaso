@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace DescargaEnCaso
 {
-    public class General
+    public static class General
     {
         public static readonly string LOCAL_DATABASE_ENCASO = "EnCasoRssDB.db3";
 
@@ -27,6 +27,11 @@ namespace DescargaEnCaso
         public static readonly string ALARM_ONLY_WIFI = "UnicamenteWifi";
         public static readonly string ALARM_NOTIFICATION_EXTRA = "NotificationExtra";
         public static readonly string ALARM_NOTIFICATION_FILE = "NotificationFile";
+        public static readonly string ALARM_NOTIFICATION_TITLE = "NotificationFileTitle";
+        public static readonly string ALARM_NOTIFICATION_IMAGE = "NotificationFileImage";
+
+        public static readonly string PLAYER_TITLE_PLAYING = "PlayerTitle";
+        public static readonly string PLAYER_IMAGE_SRC_PLAYING = "PlayerImageSrc";        
 
         public static readonly string RETROCOMPATIBILIDAD = "Retrocompatibilidad";
 
@@ -36,7 +41,7 @@ namespace DescargaEnCaso
         public static readonly string DOWNLOAD_START_SERVICE = "Start_Service";
         public static readonly string DOWNLOAD_STOP_SERVICE = "Stop_Service";
         public static readonly string DOWNLOAD_START_AUTO = "Start_Auto";
-
+        
         public static void ProgramNextAlarm(Context context)
         {
             ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(context);
@@ -80,9 +85,6 @@ namespace DescargaEnCaso
 
             if (onlyWiFi && !networkDetection.IsWifi)
                 return DownloadReturns.NoWiFiFound;
-
-            Uri uri = new Uri(rssEnCaso.Url);
-            //string filename = System.IO.Path.GetFileName(uri.LocalPath);
 
             Intent downloadIntent = new Intent(context, typeof(DownloadService));
             // Flag to start service
