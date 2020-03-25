@@ -3,5 +3,6 @@
     <color name="colorPrimary">#cf0000</color>
     <color name="colorPrimaryDark">#950000</color>
     <color name="secondaryLightColor">#676767</color>
+    <color name="thirdLightColor">#DDDDDD</color>
   
 </resources>

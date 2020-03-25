@@ -27,11 +27,11 @@ namespace DescargaEnCaso.Views
 {
     public class ListFragment : Android.Support.V4.App.Fragment
     {
-        EnCasoFile[] enCasoFiles = { };
+        EnCasoFile[] enCasoFiles = Array.Empty<EnCasoFile>();
         SwipeRefreshLayout swipeRefreshLayout;
         ListRecyclerAdapter listRecyclerAdapter;
         RecyclerView recyclerView;
-        
+
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);           
@@ -47,7 +47,10 @@ namespace DescargaEnCaso.Views
             recyclerView = view.FindViewById<RecyclerView>(Resource.Id.encaso_list_recyclerview);
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(Context);
             recyclerView.SetLayoutManager(linearLayoutManager);
-            listRecyclerAdapter = new ListRecyclerAdapter(enCasoFiles);
+            listRecyclerAdapter = new ListRecyclerAdapter(enCasoFiles)
+            {
+                ToExecutePlay = ((MainActivity)Activity)
+            };
             recyclerView.SetAdapter(listRecyclerAdapter);
             recyclerView.AddOnScrollListener(new CustomScrollListener());
             recyclerView.HasFixedSize = true;
@@ -73,8 +76,11 @@ namespace DescargaEnCaso.Views
                     LocalDatabase<EnCasoFile>.GetEnCasoFileDb().Delete(enCasoFile);                    
                 }
             }
-            enCasoFiles = LocalDatabase<EnCasoFile>.GetEnCasoFileDb().GetAll().OrderByDescending(t => t.PubDate).ToArray();            
-            listRecyclerAdapter.UpdateData(enCasoFiles);
+            enCasoFiles = LocalDatabase<EnCasoFile>.GetEnCasoFileDb().GetAll().OrderByDescending(t => t.PubDate).ToArray();
+            if (listRecyclerAdapter != null)
+            {
+                listRecyclerAdapter.UpdateData(enCasoFiles);
+            }
             Loading(false);
         }
 
@@ -89,6 +95,7 @@ namespace DescargaEnCaso.Views
     {
         EnCasoFile[] items;
         bool cached = false;
+        public MainActivity ToExecutePlay { get; set; }
 
         public ListRecyclerAdapter(EnCasoFile[] data)
         {
@@ -131,9 +138,12 @@ namespace DescargaEnCaso.Views
 
         }
 
-        void OnClick(Context context, int position)
+        async void OnClick(Context context, int position)
         {
-            CrossMediaManager.Current.Play(new MediaItem(items[position].SavedFile));
+            if (ToExecutePlay != null)
+            {
+                await ToExecutePlay.Play(items[position].SavedFile, items[position].Title, items[position].ImageUrl);
+            }
         }
 
         public void UpdateData(EnCasoFile[] enCasoFiles)

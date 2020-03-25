@@ -19,9 +19,11 @@ using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using MediaManager.Playback;
 
 namespace DescargaEnCaso.Views
 {
@@ -34,6 +36,16 @@ namespace DescargaEnCaso.Views
         Android.Support.V4.View.ViewPager viewPager;
         BottomNavigationView navigation;
 
+        // Media Player Controls
+        LinearLayout customMediaPlayer;
+        SeekBar playerSeekBar;
+        TextView playerTitle;
+        ImageView playerImage;
+        ImageButton playerPlayPause;
+        ImageButton playerStop;
+        string current_title = string.Empty;
+        string current_image = string.Empty;
+
         CancellationTokenSource cts;
         //TextView textMessage;
         int selectedNav = 0;
@@ -42,7 +54,10 @@ namespace DescargaEnCaso.Views
         {
             base.OnCreate(savedInstanceState);
             AppCenter.Start("7e292b20-d832-43e0-b3a3-480443176e2a", typeof(Analytics), typeof(Crashes));
+            // Media reproduction configurations
             CrossMediaManager.Current.Init();
+            CrossMediaManager.Current.NotificationManager.ShowNavigationControls = false;            
+
             var config = new FFImageLoading.Config.Configuration()
             {
                 DiskCacheDuration = new TimeSpan(3650, 0, 0, 0, 0),
@@ -51,10 +66,21 @@ namespace DescargaEnCaso.Views
             };
             ImageService.Instance.Initialize(config);
 
-
             SetContentView(Resource.Layout.main_activity);
-            navigation = FindViewById<BottomNavigationView>(Resource.Id.nav);
 
+            // Media Player
+            customMediaPlayer = FindViewById<LinearLayout>(Resource.Id.customMediaPlayer);
+            playerSeekBar = FindViewById<SeekBar>(Resource.Id.playerSeekBar);
+            playerSeekBar.StopTrackingTouch += CustomSeekBar_StopTrackingTouch;
+            playerSeekBar.StartTrackingTouch += CustomSeekBar_StartTrackingTouch;
+            playerTitle = FindViewById<TextView>(Resource.Id.playerTitle);
+            playerImage = FindViewById<ImageView>(Resource.Id.playerImage);
+            playerPlayPause = FindViewById<ImageButton>(Resource.Id.playerPlayPause);
+            playerPlayPause.Click += PlayerPlayPause_Click;
+            playerStop = FindViewById<ImageButton>(Resource.Id.playerStop);
+            playerStop.Click += PlayerStop_Click;
+
+            navigation = FindViewById<BottomNavigationView>(Resource.Id.nav);
             // ViewPager and its adapters use support library fragments, so use SupportFragmentManager.
             mainCollectionPagerAdapter = new MainCollectionPagerAdapter(SupportFragmentManager);
             viewPager = (ViewPager)FindViewById(Resource.Id.pager);
@@ -63,41 +89,107 @@ namespace DescargaEnCaso.Views
             viewPager.PageSelected += ViewPager_PageSelected;
             navigation.NavigationItemSelected += Navigation_NavigationItemSelected;
 
-            ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(this.ApplicationContext);
-            if (prefs.GetBoolean(General.RETROCOMPATIBILIDAD, true))
-            {
-                Retrocompatibilidad();
-                ISharedPreferencesEditor editor = prefs.Edit();
-                editor.PutBoolean(General.RETROCOMPATIBILIDAD, false);
-                editor.Apply();
-            }
-
             if (Intent.HasExtra(General.ALARM_NOTIFICATION_EXTRA))
             {
                 RetryDownload(Intent);
             }
         }
 
-        ////////////////////////////////////////////////////////////////////// ELIMINAR ESTO DESPUES
-        private void Retrocompatibilidad()
+        protected override void OnPause()
         {
-            RssModel[] rssModelList = LocalDatabase<RssModel>.GetRssModelDb().GetAll();
-            foreach (var rssModel in rssModelList)
+            base.OnPause();
+            CrossMediaManager.Current.StateChanged -= Current_StateChanged;
+            CrossMediaManager.Current.PositionChanged -= Current_PositionChanged;
+            CrossMediaManager.Current.MediaItemFinished -= Current_MediaItemFinished;
+            SaveCurrentPlayerData(null);
+        }
+
+        protected override void OnSaveInstanceState(Bundle outState)
+        {
+            base.OnSaveInstanceState(outState);
+            SaveCurrentPlayerData(outState);            
+        }
+
+        protected override void OnResume()
+        {
+            base.OnResume();
+            CrossMediaManager.Current.StateChanged += Current_StateChanged;
+            CrossMediaManager.Current.PositionChanged += Current_PositionChanged;
+            CrossMediaManager.Current.MediaItemFinished += Current_MediaItemFinished;
+            if (GetCurrentPlayerDataFromBundlePrefs(null))
             {
-                LocalDatabase<EnCasoFile>.GetEnCasoFileDb().Save(
-                    new EnCasoFile()
-                    {
-                        Title = rssModel.Title,
-                        Description = rssModel.Description,
-                        ImageUrl = rssModel.ImageUrl,
-                        PubDate = rssModel.PubDate,
-                        SavedFile = rssModel.SaveFile,
-                        DownloadDateTime = rssModel.downloadDateTime
-                    });
+                SetPlayerDataPlaying();
+                customMediaPlayer.Visibility = ViewStates.Visible;
+                SetCrossMediaByState(CrossMediaManager.Current.State);
+            }
+            else
+            {
+                customMediaPlayer.Visibility = ViewStates.Gone;
             }
         }
-        
-        
+        protected override void OnStop()
+        {
+            base.OnStop();
+        }
+
+        private bool GetCurrentPlayerDataFromBundlePrefs(Bundle SavedInstance)
+        {
+            if (SavedInstance != null)
+            {
+                current_title = SavedInstance.GetString(General.PLAYER_TITLE_PLAYING);
+                current_image = SavedInstance.GetString(General.PLAYER_IMAGE_SRC_PLAYING);
+            }
+            if (string.IsNullOrEmpty(current_title))
+            {
+                ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(this);
+                current_title = prefs.GetString(General.PLAYER_TITLE_PLAYING, string.Empty);
+                current_image = prefs.GetString(General.PLAYER_IMAGE_SRC_PLAYING, string.Empty);
+            }
+            return !string.IsNullOrEmpty(current_title) && !string.IsNullOrEmpty(current_image);
+        }
+
+        private void SaveCurrentPlayerData(Bundle state)
+        {
+            state?.PutString(General.PLAYER_TITLE_PLAYING, current_title);
+            state?.PutString(General.PLAYER_IMAGE_SRC_PLAYING, current_image);
+            ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(this);
+            var edits = prefs.Edit();
+            edits.PutString(General.PLAYER_TITLE_PLAYING, current_title);
+            edits.PutString(General.PLAYER_IMAGE_SRC_PLAYING, current_image);
+            edits.Commit();
+        }
+
+        private async void PlayerStop_Click(object sender, EventArgs e)
+        {
+            await CrossMediaManager.Current.Stop();
+        }
+
+        private async void PlayerPlayPause_Click(object sender, EventArgs e)
+        {
+            switch (CrossMediaManager.Current.State)
+            {
+                case MediaManager.Playback.MediaPlayerState.Playing:
+                    await CrossMediaManager.Current.Pause();
+                    break;
+                case MediaManager.Playback.MediaPlayerState.Paused:
+                case MediaManager.Playback.MediaPlayerState.Buffering:
+                case MediaManager.Playback.MediaPlayerState.Loading:
+                    await CrossMediaManager.Current.Play();
+                    break;                    
+            }
+        }
+
+        private void CustomSeekBar_StartTrackingTouch(object sender, SeekBar.StartTrackingTouchEventArgs e)
+        {
+            CrossMediaManager.Current.PositionChanged -= Current_PositionChanged;
+        }
+
+        private void CustomSeekBar_StopTrackingTouch(object sender, SeekBar.StopTrackingTouchEventArgs e)
+        {
+            CrossMediaManager.Current.SeekTo(TimeSpan.FromSeconds(e.SeekBar.Progress));
+            CrossMediaManager.Current.PositionChanged += Current_PositionChanged;
+        }
+
         private void Navigation_NavigationItemSelected(object sender, BottomNavigationView.NavigationItemSelectedEventArgs e)
         {
             viewPager.PageSelected -= ViewPager_PageSelected;
@@ -218,7 +310,7 @@ namespace DescargaEnCaso.Views
                         message = Resources.GetString(Resource.String.download_error_no_write_permission);
                         break;
                     case DownloadReturns.OpenFile:
-                        message = "";                        
+                        message = "";
                         break;
                 }
                 if (!string.IsNullOrEmpty(message))
@@ -232,13 +324,16 @@ namespace DescargaEnCaso.Views
                         .Show();
                 }
                 else
-                {   
+                {
                     if (intent.HasExtra(General.ALARM_NOTIFICATION_FILE))
                     {
+                        var title = intent.HasExtra(General.ALARM_NOTIFICATION_TITLE) ? intent.GetStringExtra(General.ALARM_NOTIFICATION_TITLE) : string.Empty;
+                        var image = intent.HasExtra(General.ALARM_NOTIFICATION_IMAGE) ? intent.GetStringExtra(General.ALARM_NOTIFICATION_IMAGE) : string.Empty;
                         Task.Run(async () => await Task.Delay(1000))
-                        .ContinueWith(t =>
+                        .ContinueWith(async t =>
                         {
-                            CrossMediaManager.Current.Play(new MediaItem(intent.GetStringExtra(General.ALARM_NOTIFICATION_FILE)));
+                            
+                            await Play(intent.GetStringExtra(General.ALARM_NOTIFICATION_FILE), title, image);
                         }, TaskScheduler.FromCurrentSynchronizationContext());
                     }
                 }
@@ -284,7 +379,80 @@ namespace DescargaEnCaso.Views
             {
                 Analytics.TrackEvent(we.Message);
             }
-            
+        }
+
+        public async Task Play(string uri, string title, string image)
+        {
+            current_image = image;
+            current_title = title;
+            await CrossMediaManager.Current.Play(uri);
+            SetPlayerDataPlaying();
+        }
+
+        private void SetPlayerDataPlaying()
+        {
+            playerTitle.Text = current_title;
+            ImageService.Instance
+                    .LoadUrl(current_image)
+                    .DownSampleInDip(80)
+                    .FadeAnimation(false)
+                    .Delay(0)
+                    .WithCache(FFImageLoading.Cache.CacheType.All)
+                    .LoadingPlaceholder("drawable/loading.png", FFImageLoading.Work.ImageSource.CompiledResource)
+                    .Error((Exception ex) => { Analytics.TrackEvent("Image caching error", new Dictionary<string, string>() { { "exception", ex.Message }, { "Data", ex.Data.ToString() } }); })
+                    .Into(playerImage);
+        }
+
+        private void SetCrossMediaByState(MediaPlayerState state)
+        {
+            switch (state)
+            {
+                case MediaPlayerState.Stopped:
+                    customMediaPlayer.Visibility = ViewStates.Gone;
+                    current_title = current_image = string.Empty;
+                    SaveCurrentPlayerData(null);
+                    break;
+                case MediaPlayerState.Playing:
+                    customMediaPlayer.Visibility = ViewStates.Visible;
+                    SetSeekBarMaxProgress();
+                    playerPlayPause.SetImageResource(Resource.Drawable.pause_24px);
+                    break;
+                case MediaPlayerState.Paused:
+                    customMediaPlayer.Visibility = ViewStates.Visible;
+                    SetSeekBarMaxProgress();
+                    playerPlayPause.SetImageResource(Resource.Drawable.play_24);
+                    break;
+                case MediaPlayerState.Buffering:
+                case MediaPlayerState.Loading:
+                    break;
+            }
+        }
+
+        private void SetSeekBarMaxProgress()
+        {
+            if (CrossMediaManager.Current.Duration != null)
+            {
+                playerSeekBar.Max = (int)CrossMediaManager.Current.Duration.TotalSeconds;
+            }
+            if (CrossMediaManager.Current.Position != null)
+            {
+                playerSeekBar.Progress = (int)CrossMediaManager.Current.Position.TotalSeconds;
+            }
+        }
+
+        private void Current_StateChanged(object sender, MediaManager.Playback.StateChangedEventArgs e)
+        {
+            SetCrossMediaByState(e.State);
+        }
+
+        private void Current_PositionChanged(object sender, MediaManager.Playback.PositionChangedEventArgs e)
+        {
+            playerSeekBar.Progress = (int)e.Position.TotalSeconds;
+        }
+
+        private void Current_MediaItemFinished(object sender, MediaItemEventArgs e)
+        {
+            CrossMediaManager.Current.Stop();
         }
     }
 

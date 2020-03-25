@@ -22,6 +22,7 @@ using Microsoft.AppCenter.Analytics;
 
 namespace DescargaEnCaso.Views
 {
+
     public class ManualFragment : Android.Support.V4.App.Fragment
     {
         RecyclerView recyclerView;
@@ -60,13 +61,11 @@ namespace DescargaEnCaso.Views
             return view;
         }
 
-
         private async void SwipeRefreshLayout_Refresh(object sender, EventArgs e)
         {
             var cts = new CancellationTokenSource();
             await this.UpdateRss(true, cts.Token);
             Loading(false);
-
         }
         
         public async Task UpdateRss(bool forceUpdate, CancellationToken ct)
@@ -118,11 +117,6 @@ namespace DescargaEnCaso.Views
                 Analytics.TrackEvent(ex.Message);
                 throw ex;
             }
-        }
-
-        void algo(FFImageLoading.FileWriteInfo fwi)
-        {
-
         }
 
         public void UpdateView(bool exception) {
@@ -177,7 +171,6 @@ namespace DescargaEnCaso.Views
         Context context;
         int position;
         bool cached = false;
-        
 
         public ManualRecyclerAdapter(RssEnCaso[] data)
         {
@@ -187,7 +180,6 @@ namespace DescargaEnCaso.Views
         // Create new views (invoked by the layout manager)
         public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
         {
-
             //Setup your layout here
             View itemView = null;
             itemView = LayoutInflater.From(parent.Context).Inflate(Resource.Layout.manual_row_layout, parent, false);
@@ -280,7 +272,7 @@ namespace DescargaEnCaso.Views
             }
         }
 
-            //void OnLongClick(ManualRecylcerAdapterClickEventArgs args) => ItemLongClick?.Invoke(this, args);
+        //void OnLongClick(ManualRecylcerAdapterClickEventArgs args) => ItemLongClick?.Invoke(this, args);
 
         public void UpdateData(RssEnCaso[] rssEnCasos)
         {
