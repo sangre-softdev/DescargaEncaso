@@ -44,7 +44,13 @@
     <AotAssemblies>false</AotAssemblies>
     <EnableLLVM>false</EnableLLVM>
     <BundleAssemblies>false</BundleAssemblies>
-    <AndroidSigningKeyStore>F:\Joaquín\Android\ArchivoLlave\DescargaEnCaso.jks</AndroidSigningKeyStore>
+    <AndroidSigningKeyStore>
+    </AndroidSigningKeyStore>
+    <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+    <AndroidKeyStore>false</AndroidKeyStore>
+    <AndroidSigningStorePass />
+    <AndroidSigningKeyAlias />
+    <AndroidSigningKeyPass />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>false</DebugSymbols>
@@ -56,19 +62,26 @@
     <WarningLevel>4</WarningLevel>
     <AndroidManagedSymbols>true</AndroidManagedSymbols>
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
-    <AndroidLinkMode>None</AndroidLinkMode>
+    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
     <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
     <AotAssemblies>false</AotAssemblies>
     <EnableLLVM>false</EnableLLVM>
     <BundleAssemblies>false</BundleAssemblies>
     <AndroidLinkTool>r8</AndroidLinkTool>
-    <AndroidSupportedAbis>armeabi-v7a;arm64-v8a</AndroidSupportedAbis>
+    <AndroidSupportedAbis>
+    </AndroidSupportedAbis>
     <MandroidI18n />
     <AndroidDexTool>d8</AndroidDexTool>
     <AndroidEnableSGenConcurrent>true</AndroidEnableSGenConcurrent>
     <AndroidEnableMultiDex>false</AndroidEnableMultiDex>
     <AndroidLinkSkip>
     </AndroidLinkSkip>
+    <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+    <AndroidSigningKeyStore />
+    <AndroidKeyStore>false</AndroidKeyStore>
+    <AndroidSigningStorePass />
+    <AndroidSigningKeyAlias />
+    <AndroidSigningKeyPass />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
