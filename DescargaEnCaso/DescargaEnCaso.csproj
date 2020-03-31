@@ -39,7 +39,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AndroidUseSharedRuntime>True</AndroidUseSharedRuntime>
-    <AndroidLinkMode>None</AndroidLinkMode>
+    <AndroidLinkMode>Full</AndroidLinkMode>
     <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
     <AotAssemblies>false</AotAssemblies>
     <EnableLLVM>false</EnableLLVM>
@@ -51,6 +51,12 @@
     <AndroidSigningStorePass />
     <AndroidSigningKeyAlias />
     <AndroidSigningKeyPass />
+    <AndroidPackageFormat>apk</AndroidPackageFormat>
+    <AndroidLinkTool>r8</AndroidLinkTool>
+    <AndroidDexTool>d8</AndroidDexTool>
+    <AndroidEnableMultiDex>false</AndroidEnableMultiDex>
+    <AndroidSupportedAbis />
+    <JavaMaximumHeapSize>512M</JavaMaximumHeapSize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>false</DebugSymbols>
@@ -82,6 +88,7 @@
     <AndroidSigningStorePass />
     <AndroidSigningKeyAlias />
     <AndroidSigningKeyPass />
+    <AndroidPackageFormat>apk</AndroidPackageFormat>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -105,6 +112,7 @@
     <Compile Include="Views\ManualFragment.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProguardConfiguration Include="Proguard.cfg" />
     <None Include="Resources\AboutResources.txt" />
     <None Include="Properties\AndroidManifest.xml">
       <SubType>Designer</SubType>
