@@ -33,47 +33,68 @@ namespace EnCasoShared.Model
             using (XmlReader xmlReader = XmlReader.Create("http://www.canaltrans.com/podcast/rssaudio.xml", new XmlReaderSettings() { Async = true }))
             {
                 await xmlReader.MoveToContentAsync();
-                while (xmlReader.ReadToFollowing("item"))
+                xmlReader.ReadToFollowing("item");
+
+                var rss = new RssEnCaso();
+
+                while (await xmlReader.ReadAsync())
                 {
-                    if (ct.IsCancellationRequested)                    
+                    if (ct.IsCancellationRequested)
                         ct.ThrowIfCancellationRequested();
-                    xmlReader.ReadToFollowing("title");
-                    string tit = xmlReader.ReadInnerXml();
-                    xmlReader.ReadToFollowing("description");
-                    string des = xmlReader.ReadInnerXml();
-                    DateTime pub;
-                    xmlReader.ReadToFollowing("pubDate");                    
-                    var pubString = xmlReader.ReadInnerXml();
-                    try
-                    {
-                        pub = DateTime.ParseExact(pubString, "ddd, d MMM yyyy HH:mm:ss K", System.Globalization.CultureInfo.InvariantCulture);
-                    }
-                    catch
-                    {
-                        pub = DateTime.Now;
-                    };
-                    xmlReader.ReadToFollowing("enclosure");
-                    xmlReader.MoveToFirstAttribute();
-                    string audioboom = xmlReader.Value;
-                    xmlReader.ReadToFollowing("guid");
-                    string gui = xmlReader.ReadInnerXml();
-                    xmlReader.ReadToFollowing("googleplay:image");
-                    xmlReader.MoveToFirstAttribute();
-                    string ima = xmlReader.Value;
 
-                    list.Add(new RssEnCaso()
+                    if (xmlReader.NodeType == XmlNodeType.Element && xmlReader.IsStartElement())
                     {
-                        Title = tit,
-                        Description = des,
-                        PubDate = pub,
-                        Url = gui,
-                        AudioBoomUrl = audioboom,
-                        ImageUrl = ima
-                    });
+                        switch (xmlReader.Name)
+                        {
+                            case "title":
+                                rss.Title = await xmlReader.ReadElementContentAsStringAsync();
+                                break;
 
-                    if (first)
-                    {
-                        break;
+                            case "description":
+                                rss.Description = await xmlReader.ReadElementContentAsStringAsync();
+                                break;
+
+                            case "pubDate":
+                                var pub = DateTime.Now;
+                                var pubString = await xmlReader.ReadElementContentAsStringAsync();
+                                if (!DateTime.TryParseExact(pubString, "ddd, d MMM yyyy HH:mm:ss K", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out pub))
+                                {
+                                    pub = DateTime.Now;
+                                }
+                                rss.PubDate = pub;
+                                break;
+
+                            case "media:content":
+                                string urlValue = string.Empty;
+                                string typeValue = string.Empty;
+                                while (xmlReader.MoveToNextAttribute())
+                                {
+                                    switch (xmlReader.Name)
+                                    {
+                                        case "url": urlValue = xmlReader.Value; break;
+                                        case "type": typeValue = xmlReader.Value; break;
+                                    }
+                                }
+                                switch (typeValue)
+                                {
+                                    case "audio/mpeg": rss.AudioBoomUrl = urlValue; break;
+                                    case "image/jpg": rss.ImageUrl = urlValue; break;
+                                }
+                                break;
+
+                            case "guid":
+                                rss.Url = await xmlReader.ReadElementContentAsStringAsync();
+                                break;
+
+                            case "item":
+                                list.Add(rss);
+                                rss = new RssEnCaso();
+
+                                if (first) { break; }
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
             }
@@ -104,7 +125,7 @@ namespace EnCasoShared.Model
             //Get hash code for the Name field if it is not null.
             int hashRssEnCasoTitle = obj.Title == null ? 0 : obj.Title.GetHashCode();
             int hashRssEnCasoUrl = obj.Url == null ? 0 : obj.Url.GetHashCode();
-            
+
             //Calculate the hash code for the product.
             return hashRssEnCasoTitle ^ hashRssEnCasoUrl;
         }
