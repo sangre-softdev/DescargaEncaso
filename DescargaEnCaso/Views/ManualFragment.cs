@@ -215,28 +215,32 @@ namespace DescargaEnCaso.Views
 
         void OnClick(Context context, int position)
         {
-            if (position >= 0)
+            if (position < 0)
             {
-                this.context = context;
-                this.position = position;
-                var urlDownload = items[position].Url;
-                string filename = urlDownload.Substring(urlDownload.LastIndexOf("/") + 1);
-                ISaveAndLoadFiles saveFile = new SaveAndLoadFiles_Android();
+                return;
+            }
+            this.context = context;
+            this.position = position;
 
-                if (saveFile.FileExists(filename))
-                {
-                    new AlertDialog.Builder(context)
-                            .SetTitle(Resource.String.app_name)
-                            .SetMessage(context.GetString(Resource.String.download_manual_file_exists))
-                            .SetIcon(Resource.Drawable.baseline_warning_24)
-                            .SetPositiveButton(Resource.String.download_error_ok_button, DialogPositiveButtonClick)
-                            .SetNegativeButton(Resource.String.download_error_cancel_button, DialogNegativeButtonClick)
-                            .Show();
-                }
-                else
-                {
-                    StartDownload();
-                }
+            var uri = new Uri(items[position].AudioBoomUrl);
+            
+            string filename = System.IO.Path.GetFileName(uri.LocalPath);
+
+            ISaveAndLoadFiles saveFile = new SaveAndLoadFiles_Android();
+
+            if (saveFile.FileExists(filename))
+            {
+                new AlertDialog.Builder(context)
+                        .SetTitle(Resource.String.app_name)
+                        .SetMessage(context.GetString(Resource.String.download_manual_file_exists))
+                        .SetIcon(Resource.Drawable.baseline_warning_24)
+                        .SetPositiveButton(Resource.String.download_error_ok_button, DialogPositiveButtonClick)
+                        .SetNegativeButton(Resource.String.download_error_cancel_button, DialogNegativeButtonClick)
+                        .Show();
+            }
+            else
+            {
+                StartDownload();
             }
         }
 

@@ -129,25 +129,16 @@ namespace DescargaEnCaso
         }
 
         private async Task Download(RssEnCaso download, bool isManual)
-        {   
-            string filename = download.Url.Substring(download.Url.LastIndexOf("/") + 1);
+        {
+            var uri = new Uri(download.AudioBoomUrl);
+            string filename = System.IO.Path.GetFileName(uri.LocalPath);
             int notificationId = new Random().Next();
 
 
             ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(this);
             ISaveAndLoadFiles saveAndLoad = new SaveAndLoadFiles_Android();
             Bitmap bm = null;
-            //    var pathString = prefs.GetString(download.ImageUrl, "");
-            //    if (pathString != "")
-            //    {
-            //        if (saveAndLoad.FileExists(pathString))
-            //        {
-            //            var imageBytes = saveAndLoad.LoadByte(pathString);
-            //            bm = BitmapFactory.DecodeByteArray(imageBytes, 0, imageBytes.Length);
-            //        }
-            //    }
-
-
+            
             NotificationManager notificationManager = (NotificationManager)this.ApplicationContext.GetSystemService(Context.NotificationService);
 
             if (Android.OS.Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.O)
@@ -214,20 +205,20 @@ namespace DescargaEnCaso
                         throw new UnauthorizedAccessException();
                     }
                 }
-                Task<byte[]> downloadTask = DownloadHelper.CreateDownloadTask(download.Url, progressReporter);
+                Task<byte[]> downloadTask = DownloadHelper.CreateDownloadTask(download.AudioBoomUrl, progressReporter);
                 byte[] bytesDownloaded = null;
-                try
-                {
+                //try
+                //{
                     bytesDownloaded = await downloadTask;
-                }
-                catch (Exception ex1)
-                {
-                    if (ex1.Message.Contains("(404) Not Found"))
-                    {
-                        downloadTask = DownloadHelper.CreateDownloadTask(download.AudioBoomUrl, progressReporter);
-                        bytesDownloaded = await downloadTask;
-                    }
-                }
+                //}
+                //catch (Exception ex1)
+                //{
+                //    if (ex1.Message.Contains("(404) Not Found"))
+                //    {
+                //        downloadTask = DownloadHelper.CreateDownloadTask(download.AudioBoomUrl, progressReporter);
+                //        bytesDownloaded = await downloadTask;
+                //    }
+                //}
 
                 ISaveAndLoadFiles saveFile = new SaveAndLoadFiles_Android();
                 var path = saveFile.SaveByteAsync(filename, bytesDownloaded);
