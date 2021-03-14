@@ -2,18 +2,13 @@
 using Android.App;
 using Android.Content;
 using Android.Content.PM;
-using Android.Database;
 using Android.Graphics;
 using Android.OS;
-using Android.Preferences;
+using AndroidX.Preference;
 using Android.Support.V4.App;
-using Android.Util;
 using EnCasoShared;
 using EnCasoShared.Model;
-using Java.IO;
 using System;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace DescargaEnCaso
 {

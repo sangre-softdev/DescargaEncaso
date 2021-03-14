@@ -1,24 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Android.App;
+﻿using Android.App;
 using Android.Content;
 using Android.OS;
-using Android.Preferences;
-using Android.Runtime;
 using Android.Support.V4.Widget;
 using Android.Support.V7.Widget;
-using Android.Util;
 using Android.Views;
 using Android.Widget;
+using AndroidX.Preference;
 using EnCasoShared;
 using EnCasoShared.Model;
 using FFImageLoading;
 using Microsoft.AppCenter.Analytics;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DescargaEnCaso.Views
 {

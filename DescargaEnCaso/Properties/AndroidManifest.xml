@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="10" android:versionName="3.3" package="encaso.com.sangresoftdev.descargaencaso" android:installLocation="internalOnly">
-	<uses-sdk android:minSdkVersion="22" android:targetSdkVersion="28" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="10" android:versionName="3.3" package="encaso.com.sangresoftdev.descargaencaso" android:installLocation="preferExternal">
+	<uses-sdk android:minSdkVersion="23" android:targetSdkVersion="29" />
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />

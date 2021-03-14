@@ -1,22 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Android.App;
+﻿using Android.App;
 using Android.App.Job;
 using Android.Content;
-using Android.OS;
-using Android.Preferences;
-using Android.Runtime;
-using Android.Support.V4.App;
-using Android.Views;
-using Android.Widget;
+using AndroidX.Preference;
 using DescargaEnCaso.Views;
 using EnCasoShared.Model;
 using Microsoft.AppCenter.Analytics;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DescargaEnCaso
 {
@@ -27,6 +18,7 @@ namespace DescargaEnCaso
         {
             General.ProgramNextAlarm(context);
 
+            
             ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(context);
             bool isWiFi = prefs.GetBoolean(General.ALARM_ONLY_WIFI, true);
 
