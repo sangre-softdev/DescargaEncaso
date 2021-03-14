@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
-using Android.Content;
+﻿using Android.Content;
 using Android.OS;
-using Android.Preferences;
-using Android.Runtime;
-using Android.Util;
 using Android.Views;
 using Android.Widget;
+using AndroidX.Preference;
 using EnCasoShared;
+using System;
 
 namespace DescargaEnCaso.Views
 {
@@ -25,7 +18,7 @@ namespace DescargaEnCaso.Views
 
         public override void OnCreate(Bundle savedInstanceState)
         {
-            base.OnCreate(savedInstanceState);            
+            base.OnCreate(savedInstanceState);
             prefs = PreferenceManager.GetDefaultSharedPreferences(Context);
         }
 
@@ -45,16 +38,8 @@ namespace DescargaEnCaso.Views
             onlyWiFi.Checked = isWiFi;
             onlyWiFi.CheckedChange += OnlyWiFi_CheckedChange;
 
-            if (Build.VERSION.SdkInt >= BuildVersionCodes.M)
-            {
-                tp.Hour = hour;
-                tp.Minute = minute;
-            }
-            else
-            {
-                tp.CurrentHour = new Java.Lang.Integer(hour);
-                tp.CurrentMinute = new Java.Lang.Integer(minute);
-            }
+            tp.Hour = hour;
+            tp.Minute = minute;
 
             tvHowLong = vw.FindViewById<TextView>(Resource.Id.auto_tv_how_long_to);
             HowLongToNext();
@@ -68,16 +53,8 @@ namespace DescargaEnCaso.Views
             if (setButton.Text == Resources.GetString(Resource.String.auto_btn_set_alarm))
             {
                 int hour, minute;
-                if (Build.VERSION.SdkInt >= BuildVersionCodes.M)
-                {
-                    hour = tp.Hour;
-                    minute = tp.Minute;
-                }
-                else
-                {
-                    hour = (int)tp.CurrentHour;
-                    minute = (int)tp.CurrentMinute;
-                }
+                hour = tp.Hour;
+                minute = tp.Minute;
 
                 ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(Context);
                 ISharedPreferencesEditor editor = prefs.Edit();

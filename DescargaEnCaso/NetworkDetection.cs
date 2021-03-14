@@ -20,47 +20,29 @@ namespace DescargaEnCaso
         private bool isWifi;
 
         public bool IsOnline => isOnline;
-        public bool IsMobile => IsMobile;
+        public bool IsMobile => isMobile;
         public bool IsWifi => isWifi;
 
         public static NetworkDetection DetectNetwork(Context context)
         {
             NetworkDetection networkDetection = new NetworkDetection();
             ConnectivityManager connectivityManager = (ConnectivityManager)context.GetSystemService(Context.ConnectivityService);
-            NetworkInfo info = connectivityManager.ActiveNetworkInfo;
-            if (info != null)
+
+            var networkCapabilities = connectivityManager.GetNetworkCapabilities(connectivityManager.ActiveNetwork);
+            if (networkCapabilities.HasCapability(NetCapability.Internet))
             {
-                networkDetection.isOnline = info.IsConnected;
-                if (networkDetection.isOnline)
+                networkDetection.isOnline = true;
+
+                if (networkCapabilities.HasTransport(TransportType.Wifi))
                 {
-                    if (Android.OS.Build.VERSION.SdkInt >= BuildVersionCodes.M)
-                    {
-                        var network = connectivityManager.ActiveNetwork;
-                        var capabilities = connectivityManager.GetNetworkCapabilities(network);
-                        if (capabilities != null)
-                        {
-                            networkDetection.isWifi = capabilities.HasTransport(TransportType.Wifi);
-                            networkDetection.isMobile = capabilities.HasTransport(TransportType.Cellular);                            
-                        }        
-                    }
-                    else
-                    {
-                        networkDetection.isMobile = info.Type == ConnectivityType.Mobile;
-                        networkDetection.isWifi = info.Type == ConnectivityType.Wifi;                        
-                    }
+                    networkDetection.isWifi = true;
                 }
-                else
+                if (networkCapabilities.HasTransport(TransportType.Cellular))
                 {
-                    networkDetection.isMobile = false;
-                    networkDetection.isWifi = false;
+                    networkDetection.isMobile = true;
                 }
             }
-            else
-            {
-                networkDetection.isOnline = false;
-                networkDetection.isMobile = false;
-                networkDetection.isWifi = false;
-            }
+
             return networkDetection;
         }
     }

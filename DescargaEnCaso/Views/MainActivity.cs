@@ -1,20 +1,18 @@
-﻿using Android;
-using Android.Content;
+﻿using Android.Content;
 using Android.OS;
-using Android.Preferences;
 using Android.Support.Design.Widget;
 using Android.Support.V4.App;
 using Android.Support.V4.View;
 using Android.Support.V7.App;
-using Android.Util;
 using Android.Views;
 using Android.Widget;
+using AndroidX.Preference;
 using DescargaEnCaso.Enums;
-using EnCasoShared;
 using EnCasoShared.Model;
 using FFImageLoading;
 using MediaManager;
 using MediaManager.Media;
+using MediaManager.Player;
 using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
@@ -23,7 +21,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using MediaManager.Playback;
 
 namespace DescargaEnCaso.Views
 {
@@ -56,7 +53,7 @@ namespace DescargaEnCaso.Views
             AppCenter.Start("7e292b20-d832-43e0-b3a3-480443176e2a", typeof(Analytics), typeof(Crashes));
             // Media reproduction configurations
             CrossMediaManager.Current.Init();
-            CrossMediaManager.Current.NotificationManager.ShowNavigationControls = false;            
+            CrossMediaManager.Current.Notification.ShowNavigationControls = false;
 
             var config = new FFImageLoading.Config.Configuration()
             {
@@ -168,12 +165,12 @@ namespace DescargaEnCaso.Views
         {
             switch (CrossMediaManager.Current.State)
             {
-                case MediaManager.Playback.MediaPlayerState.Playing:
+                case MediaPlayerState.Playing:
                     await CrossMediaManager.Current.Pause();
                     break;
-                case MediaManager.Playback.MediaPlayerState.Paused:
-                case MediaManager.Playback.MediaPlayerState.Buffering:
-                case MediaManager.Playback.MediaPlayerState.Loading:
+                case MediaPlayerState.Paused:
+                case MediaPlayerState.Buffering:
+                case MediaPlayerState.Loading:
                     await CrossMediaManager.Current.Play();
                     break;                    
             }
