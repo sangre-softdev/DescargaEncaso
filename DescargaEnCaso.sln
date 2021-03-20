@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28606.126
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DescargaEnCaso", "DescargaEnCaso\DescargaEnCaso.csproj", "{1600E57D-5046-4D9C-BA8E-818C06F03ACD}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "EnCasoShared", "EnCasoShared\EnCasoShared.shproj", "{35E02475-9789-4B0E-B579-8FA85D382FFA}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		EnCasoShared\EnCasoShared.projitems*{1600e57d-5046-4d9c-ba8e-818c06f03acd}*SharedItemsImports = 4
+		EnCasoShared\EnCasoShared.projitems*{35e02475-9789-4b0e-b579-8fa85d382ffa}*SharedItemsImports = 13
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1600E57D-5046-4D9C-BA8E-818C06F03ACD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1600E57D-5046-4D9C-BA8E-818C06F03ACD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1600E57D-5046-4D9C-BA8E-818C06F03ACD}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{1600E57D-5046-4D9C-BA8E-818C06F03ACD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1600E57D-5046-4D9C-BA8E-818C06F03ACD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1600E57D-5046-4D9C-BA8E-818C06F03ACD}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {44A994D1-2030-4E1B-AA75-40DD7C9BD1C6}
+	EndGlobalSection
+EndGlobal

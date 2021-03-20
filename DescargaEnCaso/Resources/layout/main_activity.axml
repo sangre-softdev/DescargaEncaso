@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/nav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/windowBackground"
+        style="@style/BottomNavigation"
+        app:menu="@menu/main_navigation"
+        android:layout_weight="0"
+        app:elevation="0dp" />
+    <LinearLayout
+        android:background="@color/thirdLightColor"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/customMediaPlayer"
+        android:layout_weight="0"
+        android:padding="10dp" >
+        <SeekBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/playerSeekBar" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView
+                android:contentDescription="asdfasdf"
+                android:id="@+id/playerImage"
+                android:layout_width="40dp"
+                android:layout_height="40dp"        
+                android:adjustViewBounds="false"
+                android:cropToPadding="false"
+                android:layout_weight="0"/>
+            <TextView
+                android:id="@+id/playerTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"                
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:layout_weight="1"
+                android:padding="8dp"/>
+            <ImageButton
+                android:src="@drawable/play_24"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:id="@+id/playerPlayPause" 
+                android:layout_weight="0"
+                android:background="@null" />
+            <ImageButton
+                android:src="@drawable/stop_24"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:id="@+id/playerStop" 
+                android:layout_weight="0"
+                android:background="@null" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

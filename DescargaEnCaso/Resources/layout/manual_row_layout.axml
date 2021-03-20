@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".MainActivity">
+
+    <ImageView
+        android:id="@+id/manual_row_layout_image"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_margin="8dp"
+        android:adjustViewBounds="false"
+        android:cropToPadding="false"
+        />
+
+    <TextView
+        android:id="@+id/manual_row_layout_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="6dp"
+        android:layout_toRightOf="@+id/manual_row_layout_image"
+        android:textStyle="bold"
+        android:ellipsize="end"
+        android:maxLines="1"
+        />
+
+    <TextView
+        android:id="@+id/manual_row_layout_description"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignStart="@+id/manual_row_layout_title"
+        android:layout_alignLeft="@+id/manual_row_layout_title"
+        android:layout_alignRight="@+id/manual_row_layout_title"
+        android:layout_alignBottom="@+id/manual_row_layout_image"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="22dp"
+/>
+
+</RelativeLayout>

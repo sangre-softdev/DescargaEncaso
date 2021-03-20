@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">Descarga En Caso</string>
+    
+    <string name="main_nav_list">Lista</string>
+    <string name="main_nav_manual">Manual</string>
+    <string name="main_nav_auto">Auto</string>
+    <string name="main_write_permission_required">Se requiere permiso para salvar el archivo</string>
+
+  <string name="auto_btn_set_alarm">Activar alarma</string>
+  <string name="auto_btn_remove_alarm">Desactivar alarma</string>
+  <string name="auto_checkbox_only_wifi">Descarga unicámente con WiFi</string>
+  <string name="auto_toast_alarm_set">Alarma activada</string>
+
+  <string name="auto_days">días</string>
+  <string name="auto_hours">horas</string>
+  <string name="auto_minutes">minutos</string>
+  <string name="auto_seconds">segundos</string>
+  <string name="auto_until_next">para sieguiente descarga</string>
+
+  <string name="encaso_list_no_internet">No se encontró internet</string>
+
+  <string name="download_error_insufficient_space">No hay suficiente espacio en disco</string>
+  <string name="download_error_no_internet_conection">No se encontró internet</string>
+  <string name="download_error_no_wifi_found">No se encontró WiFi</string>
+  <string name="download_error_no_write_permission">No hay permiso para salvar el archivo</string>
+  <string name="download_error_no_idea">Un error inesperado :(</string>
+  <string name="download_error_retry">¿Volver a intentar?</string>
+  <string name="download_error_ok_button">Sí</string>
+  <string name="download_error_cancel_button">No</string>
+  
+  <string name="download_manual_file_exists">El archivo ya existe. \n ¿Descargar nuevamente?</string>
+
+
+  <string name="download_service_pending_downloads">archivos pendientes de descarga</string>
+  <string name="download_service_downloading">Descargando...</string>
+  <string name="download_service_unauthorized_file_exception">App no tiene permiso para salvar el archivo</string>
+  <string name="download_service_io_file_exception">Un error ocurrió mientras se salvaba el archivo</string>
+  <string name="download_service_lost_internet_connection">Oops! La conexión al servidor se perdió</string>
+  <string name="download_service_disk_full">Disco lleno, libere espacio para salvar</string>
+</resources>
