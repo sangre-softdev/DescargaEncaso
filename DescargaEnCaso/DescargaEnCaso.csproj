@@ -25,7 +25,8 @@
     <AndroidEnableSGenConcurrent>true</AndroidEnableSGenConcurrent>
     <AndroidHttpClientHandlerType>Xamarin.Android.Net.AndroidClientHandler</AndroidHttpClientHandlerType>
     <AndroidKeyStore>false</AndroidKeyStore>
-    <AndroidSigningKeyStore></AndroidSigningKeyStore>
+    <AndroidSigningKeyStore>
+    </AndroidSigningKeyStore>
     <AndroidSigningStorePass />
     <AndroidSigningKeyAlias />
     <AndroidSigningKeyPass />
@@ -132,16 +133,16 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AppCenter.Analytics">
-      <Version>4.1.0</Version>
+      <Version>5.0.2</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.AppCenter.Crashes">
-      <Version>4.1.0</Version>
+      <Version>5.0.2</Version>
     </PackageReference>
     <PackageReference Include="Plugin.MediaManager">
       <Version>1.0.8</Version>
     </PackageReference>
     <PackageReference Include="sqlite-net-pcl">
-      <Version>1.7.335</Version>
+      <Version>1.8.116</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.Android.Support.Constraint.Layout">
       <Version>2.0.1</Version>
